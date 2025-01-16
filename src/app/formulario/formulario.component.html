@@ -1,0 +1,50 @@
+<div class="container mt-5 text-center">
+  <h1 class="mb-4">Validación de circulación de pico y placa</h1>
+  <div class="card mx-auto p-4 shadow" style="max-width: 600px;">
+    <form [formGroup]="formulario" (ngSubmit)="enviarConsulta()" novalidate>
+      <div class="mb-3">
+        <label for="placa" class="form-label">Placa del vehículo:</label>
+        <input
+          id="placa"
+          formControlName="placa"
+          type="text"
+          class="form-control"
+          [class.is-invalid]="formulario.get('placa')?.invalid && formulario.get('placa')?.touched"
+        />
+        <div *ngIf="formulario.get('placa')?.invalid && formulario.get('placa')?.touched" class="invalid-feedback">
+          <small *ngIf="formulario.get('placa')?.errors?.['required']">La placa es obligatoria.</small>
+          <small *ngIf="formulario.get('placa')?.errors?.['pattern']">El formato debe ser ABC-123 o ABC-1234.</small>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="fecha" class="form-label">Fecha:</label>
+        <input id="fecha" formControlName="fecha" type="date" class="form-control" />
+      </div>
+
+      <div class="mb-3">
+        <label for="hora" class="form-label">Hora:</label>
+        <input id="hora" formControlName="hora" type="time" class="form-control" />
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100" [disabled]="formulario.invalid">Consultar</button>
+    </form>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="error" class="mt-4 mx-auto alert alert-danger" style="max-width: 600px;">
+    {{ error }}
+  </div>
+
+  <!-- Mensaje del backend -->
+  <div *ngIf="respuesta" class="mt-4 mx-auto"
+       [ngClass]="{
+         'alert alert-success': respuesta.mensaje === 'El vehículo puede circular libremente.',
+         'alert alert-danger': respuesta.mensaje === 'El vehículo NO puede circular en esta fecha y hora.' || respuesta.mensaje.includes('anteriores a la fecha y hora actual')
+       }"
+       style="max-width: 600px;">
+    <h4 class="alert-heading">Resultado de la Consulta</h4>
+    <p><strong>Placa:</strong> {{ respuesta.placa }}</p>
+    <p><strong>Mensaje:</strong> {{ respuesta.mensaje }}</p>
+  </div>
+</div>
